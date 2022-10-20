@@ -5,11 +5,11 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 1s linear;
+    animation: App-logo-spin infinite -1 linear;
   }
 
   .App {
-    animation: backgroundFade 10s linear;
+    animation: backgroundFade 1s linear;
   }
 }
 
