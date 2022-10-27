@@ -68,6 +68,8 @@ app.post("/eventsub", (req, res) => {
   }
 });
 
+app.listen(port, () => console.log("Listening on port " + port));
+
 function getSecret() {
   // TODO: Get secret from secure storage. This is the secret you pass
   // when you subscribed to the event.

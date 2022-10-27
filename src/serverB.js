@@ -1,10 +1,14 @@
 const express = require("express");
+const https = require("https");
 const app = express();
-const port = 8080;
+const port = 443;
 const crypto = require("crypto");
-const twitchSigningSecret = process.argv[2];
+const fs = require("fs");
+const axios = require("axios");
+const twitchSigningSecret = "purplemonkeydishwasher";
 
-console.log("SECRET=" + twitchSigningSecret);
+const appClientId = "a9eaenvzkaras8oa9dxehmkyge5u0n";
+const appSecret = fs.readFileSync("./secret.txt", "utf8");
 
 app.get("/", (_, res) => {
   res.send("<h3>Hello World!</h3>");
@@ -67,6 +71,60 @@ app.post("/webhooks/callback", async (req, res) => {
   res.status(200).end();
 });
 
-const listener = app.listen(port, () => {
-  console.log("Your app is listening on port " + listener.address().port);
-});
+const start = async () => {
+  const listener = https
+    .createServer(
+      {
+        key: fs.readFileSync("key.pem"),
+        cert: fs.readFileSync("cert.pem"),
+      },
+      app
+    )
+    .listen(port, () => {
+      console.log("Your app is listening on port " + listener.address().port);
+    });
+
+  // .. authenticate with twitch and get access token
+  const { data } = await axios.post(
+    `https://id.twitch.tv/oauth2/token?client_id=${appClientId}&client_secret=${appSecret}&grant_type=client_credentials`,
+    { test: "empty" },
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  const { access_token } = data;
+
+  // .. subscribe to follow events
+  // return;
+  const { data: followData } = await axios.post(
+    `https://api.twitch.tv/helix/eventsub/subscriptions`,
+    {
+      type: "channel.follow",
+      version: "1",
+      condition: { broadcaster_user_id: "532759258" },
+      transport: {
+        method: "webhook",
+        callback: "https://localhost:443/webhooks/callback",
+        secret: "purplemonkeydishwasher",
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Client-Id": appClientId,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  console.log("followData=", followData);
+  const { condition, transport } = followData;
+
+  console.log("condition=", condition);
+  console.log("transport=", transport);
+};
+
+start();
