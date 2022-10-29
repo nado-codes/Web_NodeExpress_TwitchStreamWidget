@@ -103,17 +103,19 @@ const start = async () => {
 
   // .. subscribe to follow events
   // return;
-
-  // .. CREATE AN "EVENTSUB" SERVICE CLASS TO HANDLE THIS STUFF
-  // .. also consider deleting subscriptions too as twitch wont let you subscribe twice
+  await eventSubService.Init(access_token);
+  return;
   const {
-    data: { data: followData },
+    data: {
+      data: [subData],
+    },
   } = await eventSubService.Subscribe("channel.follow", access_token);
 
-  const { condition, transport } = followData;
+  // console.log("subData=", subData);
+  const { condition, transport } = subData;
 
-  console.log("condition=", condition);
-  console.log("transport=", transport);
+  // console.log("condition=", condition);
+  // console.log("transport=", transport);
 };
 
 start();
