@@ -1,11 +1,18 @@
 const axios = require("axios");
 
 class EventSubService {
-  constructor(clientId, broadcasterUserId) {
-    this.clientId = clientId;
-    this.broadcaster_user_id = broadcasterUserId;
+  #clientId = "";
+  #broadcaster_user_id = "";
+  #callbackUrl = "";
+  #secret = "";
+  #events = {};
 
-    this.events = {};
+  constructor(clientId, broadcasterUserId, callbackUrl, secret) {
+    this.#clientId = clientId;
+    this.#broadcaster_user_id = broadcasterUserId;
+    this.#callbackUrl = callbackUrl;
+    this.#secret = secret;
+    this.#events = {};
   }
 
   async Init(accessToken) {
@@ -15,19 +22,23 @@ class EventSubService {
     } = await axios.get(`https://api.twitch.tv/helix/eventsub/subscriptions`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Client-Id": this.clientId,
+        "Client-Id": this.#clientId,
       },
     });
 
-    // .. add events to this.events and unsub from duplicates
-    // subData.map((s) => )
+    subData.map(({ id, type }) => (this.#events[type] = { id, type }));
 
     this.initialized = true;
   }
 
+  IsSubscribed = (event) => this.#events[event] !== undefined;
+
   async Subscribe(event, accessToken) {
     if (!this.initialized)
       throw Error(`Please initialize the event service before subscribing`);
+
+    if (this.#events[event] != undefined)
+      throw Error(`Can't subscribe to the same event twice`);
 
     const {
       data: {
@@ -36,49 +47,48 @@ class EventSubService {
     } = await axios.post(
       `https://api.twitch.tv/helix/eventsub/subscriptions`,
       {
-        type: "channel.follow",
+        type: event,
         version: "1",
-        condition: { broadcaster_user_id: this.broadcaster_user_id },
+        condition: { broadcaster_user_id: this.#broadcaster_user_id },
         transport: {
           method: "webhook",
-          callback: "https://localhost:443/webhooks/callback",
-          secret: "purplemonkeydishwasher",
+          callback: this.callbackUrl,
+          secret: this.#secret,
         },
       },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Client-Id": this.clientId,
+          "Client-Id": this.#clientId,
           "Content-Type": "application/json",
         },
       }
     );
-    const { id } = subData;
-    this.events[event] = id;
+    const { id, type } = subData;
+    this.#events[event] = { id, type };
 
     return subData;
   }
-
-  #unsubscribeById = (id, accessToken) =>
-    axios.delete(
-      `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Client-Id": this.clientId,
-        },
-      }
-    );
 
   async Unsubscribe(event, accessToken) {
     if (!this.initialized)
       throw Error(`Please initialize the event service before unsubscribing`);
 
-    if (this.events[event] === undefined)
+    if (this.#events[event] === undefined)
       throw Error(`No subscription exists for ${event}`);
 
-    const id = this.events[event];
-    const res = await unsubscribeById(id, accessToken);
+    const { id } = this.#events[event];
+    const res = await axios.delete(
+      `https://api.twitch.tv/helix/eventsub/subscriptions?id=${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Client-Id": this.#clientId,
+        },
+      }
+    );
+
+    delete this.#events[event];
 
     return res;
   }

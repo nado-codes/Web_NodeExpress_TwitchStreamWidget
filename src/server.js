@@ -12,7 +12,13 @@ const twitchSigningSecret = "purplemonkeydishwasher";
 const appClientId = "a9eaenvzkaras8oa9dxehmkyge5u0n";
 const appSecret = fs.readFileSync("./secret.txt", "utf8");
 const broadcasterUserId = "532759258";
-const eventSubService = new EventSubService(appClientId, broadcasterUserId);
+const callbackUrl = "https://localhost:443/webhooks/callback";
+const eventSubService = new EventSubService(
+  appClientId,
+  broadcasterUserId,
+  callbackUrl,
+  twitchSigningSecret
+);
 
 app.get("/", (_, res) => {
   res.send("<h3>Hello World!</h3>");
@@ -101,21 +107,23 @@ const start = async () => {
 
   const { access_token } = data;
 
-  // .. subscribe to follow events
-  // return;
   await eventSubService.Init(access_token);
-  return;
-  const {
-    data: {
-      data: [subData],
-    },
-  } = await eventSubService.Subscribe("channel.follow", access_token);
 
-  // console.log("subData=", subData);
-  const { condition, transport } = subData;
+  // .. subscribe to events
+  console.log("Verifying event subscriptions...");
+  if (!eventSubService.IsSubscribed("channel.follow")) {
+    const { data: subData } = await eventSubService.Subscribe(
+      "channel.follow",
+      access_token
+    );
 
-  // console.log("condition=", condition);
-  // console.log("transport=", transport);
+    const { condition, transport } = subData;
+
+    console.log("condition=", condition);
+    console.log("transport=", transport);
+  }
+
+  console.log("Done!");
 };
 
 start();
