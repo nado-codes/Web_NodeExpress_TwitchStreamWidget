@@ -5,6 +5,7 @@ const port = 2022;
 app.post("/trigger", (req, res) => {
   const { event, callback } = req.query;
 
+  // .. if this app is ever hosted, the incoming "event" and "callback" will need to be sanitized to prevent malicious use
   const tw = spawn("twitch", [
     "event",
     "trigger",
