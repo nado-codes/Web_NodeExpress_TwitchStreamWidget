@@ -1,18 +1,19 @@
+// const https = require("https"); // https.createServer
 const express = require("express");
-const https = require("https");
 const app = express();
-const port = 443;
+const port = 2122; //443 for SSL
 const _crypto = require("crypto");
 const fs = require("fs");
 const axios = require("axios");
 
 const { EventSubService } = require("./eventsubservice");
 
+const dataPath = "../src/data.json";
 const twitchSigningSecret = "purplemonkeydishwasher";
 const appClientId = "a9eaenvzkaras8oa9dxehmkyge5u0n";
 const appSecret = fs.readFileSync("./secret.txt", "utf8");
 const broadcasterUserId = "532759258";
-const callbackUrl = "https://localhost:443/webhooks/callback";
+const callbackUrl = "http://localhost:3001/webhooks/callback";
 const eventSubService = new EventSubService(
   appClientId,
   broadcasterUserId,
@@ -21,7 +22,8 @@ const eventSubService = new EventSubService(
 );
 
 app.get("/", (_, res) => {
-  res.send("<h3>Hello World!</h3>");
+  res.write("<h3>Welcome to Twitch Stream Widget!</h3>");
+  res.write("<h4>Courtesy of NadoCo Interactive</h4>");
 });
 
 const verifyTwitchSignature = (req, res, buf, encoding) => {
@@ -69,9 +71,16 @@ app.post("/webhooks/callback", async (req, res) => {
     return res.status(200).send(req.body.challenge);
   }
 
-  // .. process the event
+  // .. process the event by incrementing its respective count in the data.json
   const { type } = req.body.subscription;
   const { event } = req.body;
+
+  if (!fs.existsSync(dataPath)) fs.writeFileSync(dataPath, {});
+
+  const eventData = JSON.parse(fs.readFileSync(dataPath));
+
+  eventData[type] = (eventData[type] ?? 0) + 1;
+  fs.writeFileSync(dataPath, JSON.stringify(eventData));
 
   console.log(
     `Receiving ${type} request for ${event.broadcaster_user_name}: `,
@@ -82,30 +91,42 @@ app.post("/webhooks/callback", async (req, res) => {
 });
 
 const start = async () => {
-  const listener = https
+  const listener =
+    /* https
     .createServer(
       {
         key: fs.readFileSync("key.pem"),
         cert: fs.readFileSync("cert.pem"),
       },
       app
-    )
-    .listen(port, () => {
+    ) */
+    app.listen(port, () => {
       console.log("Your app is listening on port " + listener.address().port);
     });
 
   // .. authenticate with twitch and get access token
-  const { data } = await axios.post(
-    `https://id.twitch.tv/oauth2/token?client_id=${appClientId}&client_secret=${appSecret}&grant_type=client_credentials`,
-    { test: "empty" },
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
 
-  const { access_token } = data;
+  if (!fs.existsSync("./token.txt")) {
+    console.log("Authenticating with Twitch...");
+    const {
+      data: { access_token },
+    } = await axios.post(
+      `https://id.twitch.tv/oauth2/token?client_id=${appClientId}&client_secret=${appSecret}&grant_type=client_credentials`,
+      { test: "empty" },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    fs.writeFileSync("./token.txt", access_token);
+    console.log("...Done!");
+  } else {
+    console.log("Using access token from local file");
+  }
+
+  const access_token = fs.readFileSync("./token.txt", "utf-8");
 
   await eventSubService.Init(access_token);
 

@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "start backend",
+      "command": "nodemon server",
+      "options": {
+        "cwd": "${workspaceFolder}/Backend"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "start frontend",
+      "command": "npm start",
+      "options": {
+        "cwd": "${workspaceFolder}/"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "start cli",
+      "command": "nodemon cli-trigger",
+      "options": {
+        "cwd": "${workspaceFolder}/Backend/cli-trigger"
+      }
+    },
+    {
+      "label": "start",
+      "dependsOn": ["start backend", "start frontend"]
+    }
+  ]
+}
