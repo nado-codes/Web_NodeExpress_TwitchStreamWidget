@@ -1,0 +1,112 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="hurricane_data" version="1.3.0" audacityversion="2.4.2" sel0="0.0000000000" sel1="0.0000000000" vpos="0" h="0.0000000000" zoom="28.0623874453" rate="44100.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags>
+		<tag name="TITLE" value="Blasterjaxx x Prezioso x LIZOT - Hurricane (feat. SHIBUI) [Extended Mix]"/>
+		<tag name="Software" value="Lavf58.29.100"/>
+	</tags>
+	<wavetrack name="hurricane" isSelected="1" height="150" minimized="0" channel="0" linked="1" mute="0" solo="0" rate="44100" gain="0.501187" pan="0.0" colorindex="0">
+		<waveclip offset="0.00000000" colorindex="0">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="3041242">
+				<waveblock start="0">
+					<simpleblockfile filename="e08083e1.au" len="136151" min="-1.097908" max="1.072422" rms="0.365655"/>
+				</waveblock>
+				<waveblock start="136151">
+					<simpleblockfile filename="e0808bc5.au" len="136152" min="-1.029898" max="1.127588" rms="0.39264"/>
+				</waveblock>
+				<waveblock start="272303">
+					<simpleblockfile filename="e0808841.au" len="262144" min="-1.192689" max="1.241598" rms="0.36428"/>
+				</waveblock>
+				<waveblock start="534447">
+					<simpleblockfile filename="e08086e1.au" len="262144" min="-1.132007" max="1.119452" rms="0.392026"/>
+				</waveblock>
+				<waveblock start="796591">
+					<simpleblockfile filename="e080850e.au" len="262144" min="-1.196211" max="1.203533" rms="0.360397"/>
+				</waveblock>
+				<waveblock start="1058735">
+					<simpleblockfile filename="e0808d21.au" len="262144" min="-1.268812" max="1.239662" rms="0.396279"/>
+				</waveblock>
+				<waveblock start="1320879">
+					<simpleblockfile filename="e08085b0.au" len="262144" min="-1.261289" max="1.292541" rms="0.378673"/>
+				</waveblock>
+				<waveblock start="1583023">
+					<simpleblockfile filename="e0808ff5.au" len="177055" min="-1.170413" max="1.05625" rms="0.19352"/>
+				</waveblock>
+				<waveblock start="1760078">
+					<simpleblockfile filename="e0808c42.au" len="255493" min="-1.11988" max="1.125532" rms="0.339295"/>
+				</waveblock>
+				<waveblock start="2015571">
+					<simpleblockfile filename="e0808537.au" len="175061" min="-1.108599" max="1.152094" rms="0.319011"/>
+				</waveblock>
+				<waveblock start="2190632">
+					<simpleblockfile filename="e0808574.au" len="207671" min="-1.110568" max="1.070368" rms="0.231795"/>
+				</waveblock>
+				<waveblock start="2398303">
+					<simpleblockfile filename="e08085eb.au" len="185196" min="-1.172188" max="1.212839" rms="0.373987"/>
+				</waveblock>
+				<waveblock start="2583499">
+					<simpleblockfile filename="e0808019.au" len="171053" min="-1.153183" max="1.210063" rms="0.37463"/>
+				</waveblock>
+				<waveblock start="2754552">
+					<simpleblockfile filename="e080897b.au" len="143345" min="-1.189566" max="1.125239" rms="0.376555"/>
+				</waveblock>
+				<waveblock start="2897897">
+					<simpleblockfile filename="e0808d3a.au" len="143345" min="-1.090751" max="1.090661" rms="0.238697"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="hurricane" isSelected="1" height="150" minimized="0" channel="1" linked="0" mute="0" solo="0" rate="44100" gain="0.501187" pan="0.0" colorindex="0">
+		<waveclip offset="0.00000000" colorindex="0">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="3041242">
+				<waveblock start="0">
+					<simpleblockfile filename="e0808e95.au" len="136151" min="-1.132852" max="1.165398" rms="0.372023"/>
+				</waveblock>
+				<waveblock start="136151">
+					<simpleblockfile filename="e0808f6b.au" len="136152" min="-1.092048" max="1.095799" rms="0.396728"/>
+				</waveblock>
+				<waveblock start="272303">
+					<simpleblockfile filename="e0808f99.au" len="262144" min="-1.174114" max="1.155761" rms="0.371413"/>
+				</waveblock>
+				<waveblock start="534447">
+					<simpleblockfile filename="e0808ac0.au" len="262144" min="-1.199251" max="1.128628" rms="0.395305"/>
+				</waveblock>
+				<waveblock start="796591">
+					<simpleblockfile filename="e0808331.au" len="262144" min="-1.160883" max="1.163862" rms="0.36017"/>
+				</waveblock>
+				<waveblock start="1058735">
+					<simpleblockfile filename="e08087d1.au" len="262144" min="-1.183294" max="1.27795" rms="0.394276"/>
+				</waveblock>
+				<waveblock start="1320879">
+					<simpleblockfile filename="e08083f8.au" len="262144" min="-1.226585" max="1.173519" rms="0.375555"/>
+				</waveblock>
+				<waveblock start="1583023">
+					<simpleblockfile filename="e0808c99.au" len="177055" min="-1.110683" max="1.230543" rms="0.18884"/>
+				</waveblock>
+				<waveblock start="1760078">
+					<simpleblockfile filename="e0808b6a.au" len="255493" min="-1.084" max="1.111199" rms="0.341355"/>
+				</waveblock>
+				<waveblock start="2015571">
+					<simpleblockfile filename="e0808c40.au" len="175061" min="-1.110758" max="1.106276" rms="0.324291"/>
+				</waveblock>
+				<waveblock start="2190632">
+					<simpleblockfile filename="e0808d53.au" len="207671" min="-1.148502" max="1.144359" rms="0.235771"/>
+				</waveblock>
+				<waveblock start="2398303">
+					<simpleblockfile filename="e08086c9.au" len="185196" min="-1.134503" max="1.154295" rms="0.372345"/>
+				</waveblock>
+				<waveblock start="2583499">
+					<simpleblockfile filename="e0808604.au" len="171053" min="-1.160376" max="1.189998" rms="0.377952"/>
+				</waveblock>
+				<waveblock start="2754552">
+					<simpleblockfile filename="e080832a.au" len="143345" min="-1.120561" max="1.154889" rms="0.376029"/>
+				</waveblock>
+				<waveblock start="2897897">
+					<simpleblockfile filename="e0808ffd.au" len="143345" min="-1.109402" max="1.074721" rms="0.240426"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>

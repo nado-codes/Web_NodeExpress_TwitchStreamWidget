@@ -1,31 +1,52 @@
 import { Button, Paper } from "@mui/material";
-import React from "react";
+import { useSnackbar } from "notistack";
+import React, { useEffect, useState } from "react";
 
 import data from "../data.json";
+import notif1 from "../res/hurricane_notif1.mp3";
+import notif2 from "../res/hurricane_notif2.mp3";
+import notif3 from "../res/hurricane_notif3.mp3";
+import wahh from "../res/wahh.mp3";
+import fuckSake from "../res/fucksake.mp3";
 
-import song from "../res/surprise.mp3";
 import axios from "axios";
-
-interface EventData {
-  "channel.follow": number;
-  "channel.subscribe": number;
-  "channel.raid": number;
-  "channel.dono": number;
-}
+import { WidgetData } from "../Components/Types";
 
 export const Dashboard: React.FC = () => {
-  const localIp = "192.168.39.138";
+  const localIp = "192.168.0.104";
   const eventsubCallback = `http://${localIp}:2122/webhooks/callback`;
   const {
     "channel.follow": follows,
     "channel.subscribe": subs,
     "channel.raid": raids,
     "channel.dono": donos,
-  }: EventData = data as EventData;
+  }: WidgetData = data as WidgetData;
+  const notificationSounds = [notif3, notif2, notif1, wahh, fuckSake];
+  const [audio, setAudio] = useState<HTMLAudioElement>();
+  const [audioI, setAudioI] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const notifySound = () => {
+    audio?.pause();
+    const _audio = new Audio(
+      notificationSounds[audioI % notificationSounds.length]
+    );
+    _audio.play();
+    setAudio(_audio);
+    setAudioI(audioI + 1);
+  };
+
+  useEffect(() => {
+    notifySound();
+  }, [data]);
+
+  useEffect(() => {
+    console.log("LOCAL STORAGE CHANGED: ", localStorage);
+  }, [localStorage]);
 
   const triggerEvent = async (event: string) => {
-    const audio = new Audio(song);
-    audio.play();
+    notifySound();
+    enqueueSnackbar(`Triggered "${event}" event`, { variant: "success" });
 
     try {
       await axios.post(
@@ -34,6 +55,11 @@ export const Dashboard: React.FC = () => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const writeData = async (key: string, value: unknown) => {
+    console.log(`SETTING DATA.JSON ${key} to ${value}`);
+    await axios.post(`http://${localIp}:2122/writedata`, { key, value });
   };
 
   return (
@@ -85,7 +111,11 @@ export const Dashboard: React.FC = () => {
       </Paper>
       <Paper style={{ padding: 10, margin: 5, textAlign: "left" }}>
         <h3 style={{ textAlign: "left" }}>Triggers</h3>
-        <Button variant="contained" style={{ marginRight: 5 }}>
+        <Button
+          variant="contained"
+          style={{ marginRight: 5 }}
+          onClick={() => writeData("animation", "END_STREAM")}
+        >
           Trigger End Stream
         </Button>
         <Button variant="contained">Trigger AFK</Button>

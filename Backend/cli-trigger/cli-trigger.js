@@ -30,7 +30,7 @@ app.post("/trigger", (req, res) => {
     console.log(`child process exited with code ${code}`);
   });
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
   res.send(
     `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
   );

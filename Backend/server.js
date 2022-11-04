@@ -63,7 +63,7 @@ const verifyTwitchSignature = (req, res, buf, encoding) => {
 
 app.use(express.json({ verify: verifyTwitchSignature }));
 
-app.post("/webhooks/callback", async (req, res) => {
+app.post("/webhooks/callback", (req, res) => {
   // .. verify the event
   const messageType = req.header("Twitch-Eventsub-Message-Type");
   if (messageType === "webhook_callback_verification") {
@@ -88,6 +88,14 @@ app.post("/webhooks/callback", async (req, res) => {
   );
 
   res.status(200).end();
+});
+
+app.post("/writedata", (req, res) => {
+  console.log("req.body=", req.body);
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.send(
+    `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
+  );
 });
 
 const start = async () => {
