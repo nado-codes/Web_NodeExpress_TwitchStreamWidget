@@ -1,20 +1,61 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Fade } from "@mui/material";
 import logo from "../res/nadotornado.png";
+import { useSnackbar } from "notistack";
 import "../App.css";
 import { Scene } from "../Components/Scene";
 import fadeAway from "../res/hurricane_fadeAway.mp3";
+// import inFrontOfYou from "../res/hurricane_inFrontOfYou.mp3";
+import higherhigher from "../res/lightupalight_higherandhigher.mp3";
+// import intermission from "../res/hurricane_intermission.mp3";
+import data from "../data.json";
+import axios from "axios";
 
 export const Widget: React.FC = () => {
-  const { animation } = localStorage;
+  const apiDomain = "http://192.168.50.205";
+  const { enqueueSnackbar } = useSnackbar();
+  const [audio, setAudio] = useState<HTMLAudioElement>();
+
+  const { animation } = data;
+
   useEffect(() => {
-    console.log("animation=", animation);
+    enqueueSnackbar("Widget is ready", { variant: "success" });
+    return;
+    writeData("animation", "NONE");
+  }, []);
+
+  useEffect(() => {
+    audio?.pause();
+    audio?.removeEventListener(
+      "ended",
+      () => () => writeData("animation", "NONE")
+    );
     if (animation === "END_STREAM") {
-      const audio = new Audio(fadeAway);
-      audio.play();
-      localStorage.animation = "NONE";
+      const _audio = new Audio(higherhigher);
+      _audio.play();
+      setAudio(_audio);
+      _audio.addEventListener("ended", () => writeData("animation", "NONE"));
+      // setTimeout(() => writeData("animation", "NONE"),5000);
+      enqueueSnackbar('Playing "END STREAM"', { variant: "success" });
     }
-  }, [localStorage.animation]);
+    if (animation === "AFK") {
+      const _audio = new Audio(fadeAway);
+      _audio.play();
+      setAudio(_audio);
+      _audio.addEventListener("ended", () => writeData("animation", "NONE"));
+      enqueueSnackbar('Playing "AFK"', { variant: "success" });
+    }
+  }, [animation]);
+
+  const writeData = async (key: string, value: unknown) => {
+    try {
+      console.log(`SETTING DATA.JSON ${key} to ${value}`);
+      await axios.post(`${apiDomain}:2122/writedata`, { key, value });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <Fade in={true} timeout={3000}>
       <div>

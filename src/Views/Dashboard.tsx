@@ -6,6 +6,7 @@ import data from "../data.json";
 import notif1 from "../res/hurricane_notif1.mp3";
 import notif2 from "../res/hurricane_notif2.mp3";
 import notif3 from "../res/hurricane_notif3.mp3";
+//import wahh from "../res/wahh.mp3";
 
 import axios from "axios";
 
@@ -30,6 +31,7 @@ export const Dashboard: React.FC = () => {
     "channel.dono": donos,
     animation,
   }: WidgetData = data as WidgetData;
+  // const notificationSounds = [wahh];
   const notificationSounds = [notif3, notif2, notif1];
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [audioI, setAudioI] = useState(0);
@@ -47,7 +49,7 @@ export const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    // notifySound();
+    notifySound();
   }, [data]);
 
   const triggerEvent = async (event: string) => {
