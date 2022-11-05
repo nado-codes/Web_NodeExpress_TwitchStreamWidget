@@ -21,12 +21,11 @@ const eventSubService = new EventSubService(
   twitchSigningSecret
 );
 
-app.get("/", (_, res) => {
-  res.write("<h3>Welcome to Twitch Stream Widget!</h3>");
-  res.write("<h4>Courtesy of NadoCo Interactive</h4>");
-});
+// .. MIDDLEWARE
+const verifyJSON = (req, _, buf, enc) => {
+  // .. only need to verify twitch-related endpoint calls
+  if (!req.url.includes("webhooks/callback")) return;
 
-const verifyTwitchSignature = (req, res, buf, encoding) => {
   const messageId = req.header("Twitch-Eventsub-Message-Id");
   const timestamp = req.header("Twitch-Eventsub-Message-Timestamp");
   const messageSignature = req.header("Twitch-Eventsub-Message-Signature");
@@ -60,10 +59,36 @@ const verifyTwitchSignature = (req, res, buf, encoding) => {
     console.log("Verification successful");
   }
 };
+app.use(express.json({ verify: verifyJSON }));
 
-app.use(express.json({ verify: verifyTwitchSignature }));
+app.use(function (req, res, next) {
+  // .. TODO: this is bad ... we want to allow requests from SPECIFIC origin rather than anywhere otherwise defeats the purpose of
+  // the header completely..
+  res.header("Access-Control-Allow-Origin", "*"); //"http://localhost:3000");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+// .. GET
+app.get("/", (_, res) => {
+  res.write("<h3>Welcome to Twitch Stream Widget!</h3>");
+  res.write("<h4>Courtesy of NadoCo Interactive</h4>");
+  res.status(200).end();
+});
+
+// .. POST
+const readData = () => {
+  if (!fs.existsSync(dataPath)) fs.writeFileSync(dataPath, "{}");
+
+  return fs.readFileSync(dataPath);
+};
 
 app.post("/webhooks/callback", (req, res) => {
+  // verifyTwitchSignature(req,res)
+
   // .. verify the event
   const messageType = req.header("Twitch-Eventsub-Message-Type");
   if (messageType === "webhook_callback_verification") {
@@ -75,9 +100,7 @@ app.post("/webhooks/callback", (req, res) => {
   const { type } = req.body.subscription;
   const { event } = req.body;
 
-  if (!fs.existsSync(dataPath)) fs.writeFileSync(dataPath, {});
-
-  const eventData = JSON.parse(fs.readFileSync(dataPath));
+  const eventData = JSON.parse(readData());
 
   eventData[type] = (eventData[type] ?? 0) + 1;
   fs.writeFileSync(dataPath, JSON.stringify(eventData));
@@ -91,11 +114,33 @@ app.post("/webhooks/callback", (req, res) => {
 });
 
 app.post("/writedata", (req, res) => {
-  console.log("req.body=", req.body);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.send(
-    `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
-  );
+  if (req.headers["content-type"] !== "application/json")
+    throw Error(`Request body must be json`);
+
+  const requiredKeys = ["key", "value"];
+
+  if (!Object.keys(req.body).every((k) => requiredKeys.includes(k)))
+    throw Error(
+      `Invalid body format. Must have keys ${requiredKeys.reduce(
+        (s, c) => s + c
+      )}`
+    );
+
+  // .. do I need to allow/disallow certain data keys or can I just store anything in the data.json and doesn't matter?
+  const validDataKeys = ["animation"];
+
+  if (!validDataKeys.includes(req.body.key)) {
+  }
+
+  const {
+    body: { key, value },
+  } = req;
+  const data = JSON.parse(readData());
+
+  data[key] = value;
+  fs.writeFileSync(dataPath, JSON.stringify(data));
+
+  res.status(200).end();
 });
 
 const start = async () => {

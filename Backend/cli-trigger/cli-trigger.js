@@ -5,6 +5,11 @@ const port = 2022;
 app.post("/trigger", (req, res) => {
   const { event, callback } = req.query;
 
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.send(
+    `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
+  );
+
   // .. if this app is ever hosted, the incoming "event" and "callback" will need to be sanitized to prevent malicious use
   const tw = spawn("twitch", [
     "event",
@@ -29,11 +34,6 @@ app.post("/trigger", (req, res) => {
   tw.on("close", (code) => {
     console.log(`child process exited with code ${code}`);
   });
-
-  // res.setHeader("Access-Control-Allow-Origin", "*");
-  res.send(
-    `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
-  );
 });
 
 app.listen(port, () =>

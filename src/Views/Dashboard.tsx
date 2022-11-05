@@ -6,11 +6,16 @@ import data from "../data.json";
 import notif1 from "../res/hurricane_notif1.mp3";
 import notif2 from "../res/hurricane_notif2.mp3";
 import notif3 from "../res/hurricane_notif3.mp3";
-import wahh from "../res/wahh.mp3";
-import fuckSake from "../res/fucksake.mp3";
 
 import axios from "axios";
-import { WidgetData } from "../Components/Types";
+
+export interface WidgetData {
+  "channel.follow": number;
+  "channel.subscribe": number;
+  "channel.raid": number;
+  "channel.dono": number;
+  animation: string;
+}
 
 export const Dashboard: React.FC = () => {
   const localIp = "192.168.0.104";
@@ -21,7 +26,7 @@ export const Dashboard: React.FC = () => {
     "channel.raid": raids,
     "channel.dono": donos,
   }: WidgetData = data as WidgetData;
-  const notificationSounds = [notif3, notif2, notif1, wahh, fuckSake];
+  const notificationSounds = [notif3, notif2, notif1];
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [audioI, setAudioI] = useState(0);
   const { enqueueSnackbar } = useSnackbar();
@@ -37,12 +42,8 @@ export const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    notifySound();
+    // notifySound();
   }, [data]);
-
-  useEffect(() => {
-    console.log("LOCAL STORAGE CHANGED: ", localStorage);
-  }, [localStorage]);
 
   const triggerEvent = async (event: string) => {
     notifySound();
@@ -58,8 +59,12 @@ export const Dashboard: React.FC = () => {
   };
 
   const writeData = async (key: string, value: unknown) => {
-    console.log(`SETTING DATA.JSON ${key} to ${value}`);
-    await axios.post(`http://${localIp}:2122/writedata`, { key, value });
+    try {
+      console.log(`SETTING DATA.JSON ${key} to ${value}`);
+      await axios.post(`http://${localIp}:2122/writedata`, { key, value });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -118,7 +123,20 @@ export const Dashboard: React.FC = () => {
         >
           Trigger End Stream
         </Button>
-        <Button variant="contained">Trigger AFK</Button>
+        <Button
+          variant="contained"
+          style={{ marginRight: 5 }}
+          onClick={() => writeData("animation", "AFK")}
+        >
+          Trigger AFK
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => writeData("animation", "NONE")}
+        >
+          STOP
+        </Button>
       </Paper>
     </>
   );

@@ -5,7 +5,6 @@ export const Scene: React.FC<Props> = ({
   duration = 0,
   onFinish = () => null,
 }: Props) => {
-  const _children = children ?? <></>;
   const childScenes = Array.isArray(children)
     ? children.filter(({ type }) => type === Scene)
     : [];
@@ -32,6 +31,9 @@ export const Scene: React.FC<Props> = ({
       setTimeout(onFinish, duration);
     }
   }, [CurrentScene]);
+
+  // .. some issue with TSC leads it to dislike the "??" operator, so we have to do our null-coalescing for children here
+  const _children = children ?? <></>;
 
   // .. render one scene at a time until all scenes are finished
   // .. if this scene contains no child scenes, just render the children
