@@ -1,14 +1,12 @@
 const app = require("express")();
 const { spawn } = require("child_process");
+const { verifyOrigin } = require("../netutils");
 const port = 2022;
 
 app.post("/trigger", (req, res) => {
   const { event, callback } = req.query;
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.send(
-    `[cli-trigger]: Tried to send a "${event}" event to the twitch cli at ${callback}`
-  );
+  verifyOrigin(req, res);
 
   // .. if this app is ever hosted, the incoming "event" and "callback" will need to be sanitized to prevent malicious use
   const tw = spawn("twitch", [
@@ -33,6 +31,7 @@ app.post("/trigger", (req, res) => {
 
   tw.on("close", (code) => {
     console.log(`child process exited with code ${code}`);
+    res.status(200).end();
   });
 });
 

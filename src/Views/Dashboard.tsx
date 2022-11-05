@@ -1,4 +1,4 @@
-import { Button, Paper } from "@mui/material";
+import { Button, Paper, CircularProgress } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 
@@ -14,21 +14,26 @@ export interface WidgetData {
   "channel.subscribe": number;
   "channel.raid": number;
   "channel.dono": number;
+  "channel.cheer": number;
   animation: string;
 }
 
 export const Dashboard: React.FC = () => {
-  const localIp = "192.168.0.104";
-  const eventsubCallback = `http://${localIp}:2122/webhooks/callback`;
+  const cliDomain = "http://192.168.50.205"; // "https://icy-teeth-grow-112-118-58-127.loca.lt";
+  const apiDomain = "http://192.168.50.205"; // "https://flat-sheep-visit-112-118-58-127.loca.lt";
+  const eventsubCallback = `${apiDomain}:2122/webhooks/callback`;
   const {
     "channel.follow": follows,
     "channel.subscribe": subs,
+    "channel.cheer": cheers,
     "channel.raid": raids,
     "channel.dono": donos,
+    animation,
   }: WidgetData = data as WidgetData;
   const notificationSounds = [notif3, notif2, notif1];
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [audioI, setAudioI] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const notifySound = () => {
@@ -49,26 +54,53 @@ export const Dashboard: React.FC = () => {
     notifySound();
     enqueueSnackbar(`Triggered "${event}" event`, { variant: "success" });
 
+    setIsLoading(true);
     try {
       await axios.post(
-        `http://${localIp}:2022/trigger?event=${event}&callback=${eventsubCallback}`
+        `${cliDomain}:2022/trigger?event=${event}&callback=${eventsubCallback}`
       );
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const resetEvents = async () => {
+    await writeData("channel.follow", 0);
+    await writeData("channel.subscribe", 0);
+    await writeData("channel.cheer", 0);
+    await writeData("channel.raid", 0);
+    enqueueSnackbar(`Reset all events`, {
+      variant: "success",
+    });
+  };
+
+  const triggerAnimation = async (animation: string) => {
+    notifySound();
+    enqueueSnackbar(`Triggered "${animation}" animation`, {
+      variant: "success",
+    });
+    await writeData("animation", animation);
   };
 
   const writeData = async (key: string, value: unknown) => {
     try {
       console.log(`SETTING DATA.JSON ${key} to ${value}`);
-      await axios.post(`http://${localIp}:2122/writedata`, { key, value });
+      setIsLoading(true);
+      await axios.post(`${apiDomain}:2122/writedata`, { key, value });
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
+      {isLoading && (
+        <CircularProgress style={{ position: "absolute", left: 25 }} />
+      )}
       <h1>Dashboard</h1>
       <Paper style={{ padding: 10, margin: 5, textAlign: "left" }}>
         <h3>Testing</h3>
@@ -89,9 +121,24 @@ export const Dashboard: React.FC = () => {
           </Button>
           <Button
             variant="contained"
+            onClick={() => triggerEvent("channel.cheer")}
+            style={{ marginRight: 5 }}
+          >
+            Cheer
+          </Button>
+          <Button
+            variant="contained"
             onClick={() => triggerEvent("channel.raid")}
+            style={{ marginRight: 5 }}
           >
             Raid
+          </Button>
+          <Button
+            variant="contained"
+            // onClick={() => triggerEvent("channel.raid")}
+            disabled
+          >
+            Donate
           </Button>
         </div>
 
@@ -109,31 +156,49 @@ export const Dashboard: React.FC = () => {
             {donos ?? 0}
           </li>
           <li>
+            <b>Cheers: </b>
+            {cheers ?? 0}
+          </li>
+          <li>
             <b>Raids: </b>
             {raids ?? 0}
           </li>
         </ul>
+        <Button variant="contained" onClick={resetEvents} color="error">
+          Reset
+        </Button>
       </Paper>
-      <Paper style={{ padding: 10, margin: 5, textAlign: "left" }}>
+      <Paper
+        style={{
+          padding: 10,
+          paddingBottom: 20,
+          margin: 5,
+          textAlign: "left",
+        }}
+      >
         <h3 style={{ textAlign: "left" }}>Triggers</h3>
+        <b>Current Animation: </b>
+        <span style={{ marginBottom: 10, display: "block" }}>
+          {animation ?? "NONE"}
+        </span>
         <Button
           variant="contained"
           style={{ marginRight: 5 }}
-          onClick={() => writeData("animation", "END_STREAM")}
+          onClick={() => triggerAnimation("END_STREAM")}
         >
           Trigger End Stream
         </Button>
         <Button
           variant="contained"
           style={{ marginRight: 5 }}
-          onClick={() => writeData("animation", "AFK")}
+          onClick={() => triggerAnimation("AFK")}
         >
           Trigger AFK
         </Button>
         <Button
           variant="contained"
           color="error"
-          onClick={() => writeData("animation", "NONE")}
+          onClick={() => triggerAnimation("NONE")}
         >
           STOP
         </Button>

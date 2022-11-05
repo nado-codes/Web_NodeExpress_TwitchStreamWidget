@@ -7,6 +7,7 @@ const fs = require("fs");
 const axios = require("axios");
 
 const { EventSubService } = require("./eventsubservice");
+const { verifyOrigin } = require("./netutils");
 
 const dataPath = "../src/data.json";
 const twitchSigningSecret = "purplemonkeydishwasher";
@@ -62,13 +63,7 @@ const verifyJSON = (req, _, buf, enc) => {
 app.use(express.json({ verify: verifyJSON }));
 
 app.use(function (req, res, next) {
-  // .. TODO: this is bad ... we want to allow requests from SPECIFIC origin rather than anywhere otherwise defeats the purpose of
-  // the header completely..
-  res.header("Access-Control-Allow-Origin", "*"); //"http://localhost:3000");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  verifyOrigin(req, res);
   next();
 });
 

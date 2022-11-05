@@ -28,6 +28,10 @@
     {
       "label": "start",
       "dependsOn": ["start backend", "start frontend"]
+    },
+    {
+      "label": "start debug",
+      "dependsOn": ["start backend", "start frontend", "start cli"]
     }
   ]
 }
