@@ -57,6 +57,12 @@ export const Widget: React.FC = () => {
   };
 
   return (
+    <div style={{}}>
+      <h1>{animation}</h1>
+    </div>
+  );
+
+  return (
     <Fade in={true} timeout={3000}>
       <div>
         <Scene>

@@ -5,6 +5,7 @@ const verifyOrigin = (req, res) => {
     "192.168.0.104",
     "192.168.50.205",
     "192.168.50.52",
+    "192.168.76.138",
   ];
 
   if (!allowedOrigins.includes(req.hostname)) {
