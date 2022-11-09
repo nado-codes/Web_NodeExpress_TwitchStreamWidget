@@ -2,7 +2,8 @@ const verifyOrigin = (req, res) => {
   console.log("INCOMING REQ FROM ORIGIN: ", req.hostname);
   const allowedOrigins = [
     "localhost",
-    "192.168.0.104",
+    "192.168.0.22",
+    "192.168.0.110",
     "192.168.50.205",
     "192.168.50.52",
     "192.168.76.138",

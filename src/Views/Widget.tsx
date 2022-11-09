@@ -10,6 +10,37 @@ import higherhigher from "../res/lightupalight_higherandhigher.mp3";
 // import intermission from "../res/hurricane_intermission.mp3";
 import data from "../data.json";
 import axios from "axios";
+import "../Components/WidgetAnimations.css";
+
+/* const ANIM_AFK = () => {
+  const [logoAnimation, setLogoAnimation] = useState("shrinkLogo");
+
+  useEffect(() => {
+    setTimeout(() => setLogoAnimation("growLogo"), 1000);
+  }, []);
+
+  return (
+    <Fade in={true} timeout={1000}>
+      <div
+        style={{
+          position: "absolute",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "middle",
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "black",
+          padding: 200,
+          overflow: "hidden",
+        }}
+      >
+        <img className={logoAnimation} src={logo} />
+      </div>
+    </Fade>
+  );
+}; */
 
 export const Widget: React.FC = () => {
   const apiDomain = "http://192.168.50.205";
@@ -45,6 +76,9 @@ export const Widget: React.FC = () => {
       _audio.addEventListener("ended", () => writeData("animation", "NONE"));
       enqueueSnackbar('Playing "AFK"', { variant: "success" });
     }
+    if (animation === "NONE") {
+      enqueueSnackbar("Stopped Animations", { variant: "error" });
+    }
   }, [animation]);
 
   const writeData = async (key: string, value: unknown) => {
@@ -56,17 +90,24 @@ export const Widget: React.FC = () => {
     }
   };
 
-  return (
-    <div style={{}}>
-      <h1>{animation}</h1>
-    </div>
-  );
+  // return <>{animation === "AFK" && <ANIM_AFK />}</>;
 
   return (
     <Fade in={true} timeout={3000}>
-      <div>
+      <div
+        style={{
+          background: "black",
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+      >
         <Scene>
+          <h1 style={{ color: "white" }}>Scene 1</h1>
           <Scene duration={3000}>
+            <h1 style={{ color: "white" }}>Scene 1a</h1>
             <div
               style={{
                 background: "black",
@@ -82,6 +123,7 @@ export const Widget: React.FC = () => {
           </Scene>
 
           <Scene>
+            <h1 style={{ color: "white" }}>Scene 1b</h1>
             <h1 style={{ color: "red" }}>I'm a Scene</h1>
           </Scene>
         </Scene>

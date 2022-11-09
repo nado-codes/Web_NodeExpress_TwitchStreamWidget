@@ -20,8 +20,8 @@ export interface WidgetData {
 }
 
 export const Dashboard: React.FC = () => {
-  const cliDomain = "http://192.168.50.205"; // "https://icy-teeth-grow-112-118-58-127.loca.lt";
-  const apiDomain = "http://192.168.50.205"; // "https://flat-sheep-visit-112-118-58-127.loca.lt";
+  const cliDomain = "http://192.168.0.22"; // "https://icy-teeth-grow-112-118-58-127.loca.lt";
+  const apiDomain = "http://192.168.0.22"; // "https://flat-sheep-visit-112-118-58-127.loca.lt";
   const eventsubCallback = `${apiDomain}:2122/webhooks/callback`;
   const {
     "channel.follow": follows,
