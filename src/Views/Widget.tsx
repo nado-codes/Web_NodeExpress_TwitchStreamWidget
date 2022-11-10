@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Fade } from "@mui/material";
-import logo from "../res/nadotornado.png";
+// import logo from "../res/nadotornado.png";
 import { useSnackbar } from "notistack";
 import "../App.css";
 import { Scene } from "../Components/Scene";
@@ -104,11 +104,10 @@ export const Widget: React.FC = () => {
           right: 0,
         }}
       >
-        <Scene>
-          <h1 style={{ color: "white" }}>Scene 1</h1>
-          <Scene duration={3000}>
+        <Scene name={"Scene 1"}>
+          <Scene name={"Scene 1a"} duration={1000}>
             <h1 style={{ color: "white" }}>Scene 1a</h1>
-            <div
+            {/* <div
               style={{
                 background: "black",
                 position: "absolute",
@@ -119,12 +118,11 @@ export const Widget: React.FC = () => {
               }}
             >
               <img src={logo} className="App-logo" alt="logo" />
-            </div>
+            </div>*/}
           </Scene>
 
-          <Scene>
+          <Scene name={"Scene 1b"}>
             <h1 style={{ color: "white" }}>Scene 1b</h1>
-            <h1 style={{ color: "red" }}>I'm a Scene</h1>
           </Scene>
         </Scene>
       </div>

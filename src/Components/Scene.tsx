@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export const Scene: React.FC<Props> = ({
   children,
+  name,
   duration = 0,
   onFinish = () => null,
 }: Props) => {
@@ -11,11 +12,18 @@ export const Scene: React.FC<Props> = ({
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const { type: CurrentScene } = childScenes[currentSceneIndex] ?? {};
 
-  useEffect(() => {
-    console.log("[Scene]: Hello!");
-    console.log(`[Scene]: I have ${childScenes.length} child scenes`);
-
+  const handleFinish = () => {
+    name !== undefined && console.log(`Finished Scene ${name}`);
     onFinish();
+  };
+
+  useEffect(() => {
+    // onFinish();
+    name !== undefined && console.log(`Rendering ${name}`);
+
+    if (childScenes.length > 0) {
+      console.log(`I have ${childScenes.length} child scenes`);
+    }
   }, []);
 
   useEffect(() => {
@@ -23,12 +31,12 @@ export const Scene: React.FC<Props> = ({
 
     // .. if there are no more child scenes, finish the scene after a set duration
     if (!CurrentScene) {
-      console.log(
+      /* console.log(
         `A scene has no more child scenes, finishing in ${
           duration / 1000
         } seconds`
-      );
-      setTimeout(onFinish, duration);
+      ); */
+      setTimeout(handleFinish, duration);
     }
   }, [CurrentScene]);
 
@@ -52,6 +60,7 @@ export const Scene: React.FC<Props> = ({
 
 interface Props {
   children?: React.ReactElement | React.ReactElement[];
+  name?: string;
   duration?: number;
   onFinish?: () => void;
 }
